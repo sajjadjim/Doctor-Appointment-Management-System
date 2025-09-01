@@ -1,39 +1,48 @@
 import React from "react";
-import { Stethoscope, CalendarCheck2, MapPin, ShieldPlus } from "lucide-react";
+import {
+  Stethoscope,
+  CalendarCheck2,
+  LayoutDashboard,
+  ShieldPlus,
+} from "lucide-react";
 import { Link } from "react-router";
 
 const features = [
   {
-    title: "Expert Mentors",
-    description: "Learn from certified medical professionals and trainers.",
+    title: "Find Doctors Easily",
+    description: "Search and filter by specialization to find the right doctor quickly.",
     icon: <Stethoscope className="w-6 h-6 text-indigo-600" />,
   },
   {
-    title: "Flexible Schedule",
-    description: "Weekend and evening sessions for all types of learners.",
+    title: "Instant Booking",
+    description: "Book your appointment in seconds with a clean date picker.",
     icon: <CalendarCheck2 className="w-6 h-6 text-indigo-600" />,
   },
   {
-    title: "Hands-On Training",
-    description: "Real-time simulations and practical learning.",
-    icon: <ShieldPlus className="w-6 h-6 text-indigo-600" />,
+    title: "Smart Dashboards",
+    description:
+      "Patients can track bookings; doctors can manage schedules in real time.",
+    icon: <LayoutDashboard className="w-6 h-6 text-indigo-600" />,
   },
   {
-    title: "Nationwide Locations",
-    description: "Join in your city or attend virtually.",
-    icon: <MapPin className="w-6 h-6 text-indigo-600" />,
+    title: "Secure & Reliable",
+    description:
+      "Role-based authentication ensures safe access for both patients and doctors.",
+    icon: <ShieldPlus className="w-6 h-6 text-indigo-600" />,
   },
 ];
 
 const Section4 = () => {
   return (
-    <section className="bg-white 2xl:max-w-7xl md:max-w-6xl mx-auto py-20 ">
+    <section className="bg-white 2xl:max-w-7xl md:max-w-6xl mx-auto py-20">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-4xl font-bold text-indigo-600 mb-4">
-          Medical Bootcamp
+          Why Choose Our System?
         </h2>
         <p className="text-gray-600 mb-10 text-lg max-w-3xl mx-auto">
-          Boost your medical knowledge, hands-on experience, and career with our expert-led bootcamps designed for aspiring and practicing professionals.
+          The Doctor Appointment Management System makes healthcare simple.
+          Discover doctors, book appointments, and manage everything from one
+          platform — secure, fast, and easy to use.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
@@ -49,9 +58,9 @@ const Section4 = () => {
           ))}
         </div>
 
-        <Link to="/availableBootcamp">
+        <Link to="/patient/dashboard">
           <button className="px-6 py-3 cursor-pointer bg-indigo-600 text-white text-lg font-medium rounded-lg hover:bg-indigo-700 transition">
-            Explore Bootcamps
+            Explore Doctors
           </button>
         </Link>
       </div>

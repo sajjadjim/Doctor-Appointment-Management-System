@@ -1,64 +1,141 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router";
 
 const Footer = () => {
-    return (
+  return (
+    <footer className="bg-gray-100 border-t border-gray-200 text-gray-700">
+      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        {/* About */}
         <div>
-            <footer className="footer sm:footer-horizontal bg-base-300 text-base-content p-10">
-  <nav>
-    <h6 className="footer-title">Services</h6>
-    <a className="link link-hover">Branding</a>
-    <a className="link link-hover">Design</a>
-    <a className="link link-hover">Marketing</a>
-    <a className="link link-hover">Advertisement</a>
-  </nav>
-  <nav>
-    <h6 className="footer-title">Company</h6>
-    <a className="link link-hover">About us</a>
-    <a className="link link-hover">Contact</a>
-    <a className="link link-hover">Jobs</a>
-    <a className="link link-hover">Press kit</a>
-  </nav>
-  <nav>
-    <h6 className="footer-title">Social</h6>
-    <div className="grid grid-flow-col gap-4">
-      <a>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          className="fill-current">
-          <path
-            d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
-        </svg>
-      </a>
-      <a>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          className="fill-current">
-          <path
-            d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
-        </svg>
-      </a>
-      <a>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          className="fill-current">
-          <path
-            d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
-        </svg>
-      </a>
-    </div>
-  </nav>
-</footer>
+          <h6 className="text-lg font-semibold mb-3 text-indigo-600">
+            Doctor Appointment System
+          </h6>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            A modern platform to connect patients with doctors. Search, book,
+            and manage appointments with ease — anytime, anywhere.
+          </p>
         </div>
-    );
+
+        {/* Quick Links */}
+        <div>
+          <h6 className="text-lg font-semibold mb-3 text-indigo-600">
+            Quick Links
+          </h6>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link to="/" className="hover:text-indigo-600">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/patient/dashboard" className="hover:text-indigo-600">
+                Patient Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link to="/doctor/dashboard" className="hover:text-indigo-600">
+                Doctor Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-indigo-600">
+                About
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Support */}
+        <div>
+          <h6 className="text-lg font-semibold mb-3 text-indigo-600">
+            Support
+          </h6>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link to="/contact" className="hover:text-indigo-600">
+                Contact Us
+              </Link>
+            </li>
+            <li>
+              <Link to="/faq" className="hover:text-indigo-600">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <a href="mailto:sajjadjim15@gmail.com" className="hover:text-indigo-600">
+                Email Support
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Social */}
+        <div>
+          <h6 className="text-lg font-semibold mb-3 text-indigo-600">
+            Connect with Us
+          </h6>
+          <div className="flex gap-4">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-indigo-600"
+              aria-label="Facebook"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6c0-.955.192-1.333 1.115-1.333H18V0h-3.808C10.596 0 9 1.583 9 4.615V8z" />
+              </svg>
+            </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-indigo-600"
+              aria-label="Twitter"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M24 4.6a10 10 0 0 1-2.8.8 4.9 4.9 0 0 0 2.1-2.7c-.9.6-1.9 1-3 1.3a4.9 4.9 0 0 0-8.4 4.4A14 14 0 0 1 1.7 3 4.9 4.9 0 0 0 3.2 10 4.8 4.8 0 0 1 .9 9.5v.1a4.9 4.9 0 0 0 3.9 4.8 5 5 0 0 1-2.2.1 4.9 4.9 0 0 0 4.6 3.4A9.9 9.9 0 0 1 0 21.5a14 14 0 0 0 7.6 2.2c9.1 0 14-7.6 14-14v-.6A10 10 0 0 0 24 4.6z" />
+              </svg>
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-indigo-600"
+              aria-label="LinkedIn"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M20.447 20.452H17.2V14.8c0-1.35-.027-3.082-1.878-3.082-1.88 0-2.168 1.466-2.168 2.98v5.754H9V9h3.11v1.56h.04c.43-.814 1.49-1.67 3.07-1.67 3.28 0 3.88 2.16 3.88 4.97v6.6zM5.337 7.433a1.8 1.8 0 1 1 .004-3.6 1.8 1.8 0 0 1-.004 3.6zM6.9 20.452H3.77V9h3.13v11.452z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-200 py-4 text-center text-sm text-gray-500">
+        © {new Date().getFullYear()} Doctor Appointment System. All rights reserved.
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

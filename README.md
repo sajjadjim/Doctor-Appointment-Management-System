@@ -1,34 +1,50 @@
-🩺 Medical BootCamps
-Welcome to Medical BootCamps – an interactive platform built to empower individuals with fundamental medical knowledge and first-aid skills. Whether you're a healthcare enthusiast or just looking to be prepared in emergencies, our bootcamps provide hands-on and engaging content to help you learn effectively.
+# 🩺 Doctor Appointment Management System (DAMS)
 
-Welcome to **Medical BootCamps**! This project is designed to help everyday people learn about essential medical skills and knowledge through interactive bootcamps.
+Welcome to **Doctor Appointment Management System (DAMS)** – a modern, responsive platform that simplifies scheduling and managing doctor appointments. Whether you are a patient looking to book a visit or a doctor managing your schedule, DAMS provides an intuitive and secure solution.
 
-## Getting Started Locally
+---
 
-🚀 Features
-🎓 Interactive Bootcamps: Covering topics like CPR, First Aid, Basic Life Support, and more.
+## 🚀 Features
 
-📆 Schedule & Registration: View upcoming bootcamps and register with ease.
+- 🔍 **Doctor Directory**: Browse and search for doctors by name or specialization.
+- 📅 **Appointment Booking**: Simple one-click booking with a clean date picker.
+- 📊 **Patient Dashboard**: Track your appointments and filter by status (Pending, Completed, Cancelled).
+- 🩺 **Doctor Dashboard**: Doctors can view schedules, filter by date/status, and update appointment progress.
+- 🔐 **User Authentication**: Secure login system with role-based access (Doctor / Patient).
+- 📱 **Responsive Design**: Works smoothly across desktop, tablet, and mobile.
+- ⚡ **Real-time Updates**: Appointment statuses update instantly.
 
-📊 Progress Tracking: Users can track their progress and completed modules.
+---
 
-📱 Responsive Design: Works smoothly across desktop, tablet, and mobile.
+## 🧰 Tech Stack
 
-🔐 User Authentication: Secure login system with personalized dashboards.
+| Category    | Tools/Frameworks |
+|-------------|------------------|
+| Frontend    | React / Next.js, Tailwind CSS, React Router |
+| Backend     | Node.js, Express (or Firebase) |
+| Database    | MongoDB / Firebase Firestore |
+| State Mgmt  | Zustand / Redux Toolkit (optional) |
+| API Utils   | Axios, React Query |
+| Animations  | Lottie, Framer Motion |
+| Charts      | Recharts / Chart.js (for analytics) |
+| Dev Tools   | Vite, ESLint, Prettier |
 
-📈 Analytics Dashboard (for admins): Monitor user engagement, bootcamp stats, and registration trends.
-Follow these steps to run the project on your local machine:
+---
+
+## 🛠 Getting Started Locally
+
+Follow these steps to run the project on your machine:
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/medical-bootcamps.git
-cd medical-bootcamps
+git clone https://github.com/your-username/doctor-appointment-system.git
+cd doctor-appointment-system
 ```
 
 ### 2. Install Dependencies
 
-Make sure you have [Node.js](https://nodejs.org/) installed. Then, install the required packages:
+Make sure you have [Node.js](https://nodejs.org/) installed, then run:
 
 ```bash
 npm install
@@ -42,54 +58,12 @@ npm run dev
 
 The app will be available at [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
 
-## Main Packages Used
+---
 
-- **React** – For building user interfaces
-- **Vite** – For fast development and build tooling
-- **ESLint** – For code quality and linting
+## 📂 Project Structure
 
-## Learn More
-
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vitejs.dev/)
-- [ESLint Documentation](https://eslint.org/)
-
-
-🧰 Tech Stack
-Category	Tools/Frameworks
-Frontend	React, Tailwind CSS, React Router
-Backend	Node.js, Express (or Firebase if applicable)
-Database	MongoDB / Firebase Firestore
-Dev Tools	Vite, ESLint, Prettier, Axios, React Query
-Animations	Lottie, Framer Motion
-Charts	Recharts / Chart.js
-
-🛠 Getting Started Locally
-Follow the steps below to run the project locally on your machine.
-
-1. Clone the Repository
-bash
-Copy
-Edit
-git clone https://github.com/your-username/medical-bootcamps.git
-cd medical-bootcamps
-2. Install Dependencies
-Make sure you have Node.js and npm installed.
-
-bash
-Copy
-Edit
-npm install
-3. Start the Development Server
-bash
-Copy
-Edit
-npm run dev
-Visit http://localhost:5173 in your browser.
-
-📂 Project Structure
-
-medical-bootcamps/
+```
+doctor-appointment-system/
 ├── public/              # Static assets
 ├── src/
 │   ├── components/      # Reusable UI components
@@ -102,48 +76,57 @@ medical-bootcamps/
 ├── .eslintrc.cjs        # ESLint rules
 ├── vite.config.js       # Vite configuration
 └── package.json         # Project metadata and dependencies
+```
 
-🧪 Testing
+---
+
+## 🧪 Testing
+
 To run tests (if set up):
 
-bash
-Copy
-Edit
+```bash
 npm run test
-We recommend using tools like Jest, React Testing Library, and Cypress for testing.
+```
 
-🧑‍💻 Contributing
-We welcome contributions! Here's how you can help:
+We recommend using **Jest**, **React Testing Library**, and **Cypress** for end-to-end testing.
 
-🐛 Report bugs or issues
+---
 
-💡 Suggest new features
+## 🧑‍💻 Contributing
 
-✨ Submit a pull request
+We welcome contributions! Here’s how you can help:
+
+- 🐛 Report bugs or issues  
+- 💡 Suggest new features  
+- ✨ Submit a pull request  
 
 Please read the contributing guidelines before you start.
 
-📖 Learn More
-React Documentation
+---
 
-Vite Documentation
+## 📖 Learn More
 
-ESLint Documentation
+- [React Documentation](https://react.dev/)  
+- [Next.js Documentation](https://nextjs.org/)  
+- [Tailwind CSS Docs](https://tailwindcss.com/)  
+- [React Query Docs](https://tanstack.com/query/latest)  
+- [ESLint Documentation](https://eslint.org/)  
 
-Tailwind CSS Docs
+---
 
-React Query Docs
+## 📬 Contact
 
-📬 Contact
 If you have any questions or want to get in touch:
 
-GitHub: @sajjadjim
+- GitHub: [@sajjadjim](https://github.com/sajjadjim)  
+- Email: sajjadjim15@gmail.com  
 
-Email: sajjadjim15@gmail.com
+---
 
-📜 License
-This project is licensed under the MIT License.
+## 📜 License
 
-Would you like a version of this with Markdown badges, images, or GitHub Actions support as well?
+This project is licensed under the **MIT License**.
 
-Feel free to contribute or open issues to help improve Medical BootCamps!
+---
+
+✨ Feel free to contribute or open issues to help improve **Doctor Appointment Management System (DAMS)!**
