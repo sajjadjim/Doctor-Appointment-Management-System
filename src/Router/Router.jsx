@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
       ,
       {
         path: 'availableBootcamp',
-        element: <PrivateRoute><AvailableBootcamp /></PrivateRoute>,
+        element: <AvailableBootcamp />,
         loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps') // Load all camps data
       },
       {
@@ -84,20 +84,20 @@ Component : Forbidden
   },
   {
     path: "/dashboard",
-    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+    element: <Dashboard></Dashboard>,
     children: [
       {
         path: 'manage_registered_camps',
-        element: <Admin><ManageRegisteredCamp /></Admin>,
+        element: <ManageRegisteredCamp />,
         loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps')
       },
       {
         path: 'addNewBootcamp',
-        element: <Admin><AddBootcamp></AddBootcamp></Admin>
+        element: <AddBootcamp></AddBootcamp>
       },
       {
         path: 'manageCamps',
-        element: <Admin><ManageCamps></ManageCamps></Admin>
+        element: <ManageCamps></ManageCamps>
       },
       {
         path: '/dashboard/registered-camps'
@@ -105,7 +105,7 @@ Component : Forbidden
       },
       {
         path: 'organizer-profile',
-        element: <Admin><OrganizerProfile></OrganizerProfile></Admin>
+        element: <OrganizerProfile></OrganizerProfile>
       },
       {
         path: 'participant-profile',
