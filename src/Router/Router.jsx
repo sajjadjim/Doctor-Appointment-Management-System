@@ -19,8 +19,6 @@ import AddBootcamp from "../Pages/Dashboard/Organizer Dashboard/Add New Bootcamp
 import PrivateRoute from "../Routes/PrivateRoute";
 import ManageCamps from "../Pages/Dashboard/Organizer Dashboard/Manage Camps/ManageCamps";
 import RegisteredCamp from "../Pages/Dashboard/Participant Dashboard/Registered camp/RegisteredCamp";
-import Payment from "../Pages/Dashboard/Participant Dashboard/Payment system/Payment";
-import PaymentHistory from "../Pages/Dashboard/Participant Dashboard/Payment History/PaymentHistory";
 import ParticipantProfile from "../Pages/Dashboard/Participant Dashboard/Participant Profile/ParticipantProfile";
 import OrganizerProfile from "../Pages/Dashboard/Organizer Dashboard/Organizer Profile/OrganizerProfile";
 import Admin from "../Routes/Admin";
@@ -108,16 +106,6 @@ Component : Forbidden
       {
         path: 'organizer-profile',
         element: <Admin><OrganizerProfile></OrganizerProfile></Admin>
-      }
-      ,
-      {
-        path: 'payment/:campId',
-        Component: Payment
-
-      },
-      {
-        path: 'payment-history',
-        element: <PaymentHistory></PaymentHistory>
       },
       {
         path: 'participant-profile',

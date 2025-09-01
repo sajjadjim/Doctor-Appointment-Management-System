@@ -1,6 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { CheckCircle, Loader2 } from "lucide-react";
+
+/**
+ * Contact Page — polished for a medical/clinic style.
+ * - Two-column inputs (mobile: 1 col)
+ * - Subject + Reason select
+ * - Live validation & counters
+ * - Honeypot (website)
+ * - Copy-to-clipboard helpers
+ * - Decorative map & info cards
+ */
+
+const MAX_MESSAGE = 1000;
 
 const Contact = () => {
   useEffect(() => {
@@ -10,18 +22,50 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState(false);
   const [errors, setErrors] = useState({});
-  const [form, setForm] = useState({ name: "", email: "", message: "", website: "" }); // website = honeypot
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    reason: "",
+    message: "",
+    website: "", // honeypot
+  });
+
+  const reasons = useMemo(
+    () => [
+      { value: "", label: "Select a reason" },
+      { value: "booking", label: "Booking / Appointment" },
+      { value: "doctor", label: "Doctor / Specialization Query" },
+      { value: "support", label: "Account / App Support" },
+      { value: "feedback", label: "Feedback / Suggestion" },
+      { value: "other", label: "Other" },
+    ],
+    []
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: value }));
+    setForm((p) => ({
+      ...p,
+      [name]: name === "message" ? value.slice(0, MAX_MESSAGE) : value,
+    }));
+    if (errors[name]) {
+      setErrors((er) => ({ ...er, [name]: undefined }));
+    }
   };
 
   const validate = () => {
     const next = {};
     if (!form.name.trim()) next.name = "Please enter your name";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email";
-    if (form.message.trim().length < 10) next.message = "Message should be at least 10 characters";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      next.email = "Enter a valid email";
+    if (form.phone && !/^[+0-9 ()-]{6,}$/.test(form.phone))
+      next.phone = "Enter a valid phone";
+    if (!form.subject.trim()) next.subject = "Please add a subject";
+    if (!form.reason) next.reason = "Please select a reason";
+    if (form.message.trim().length < 10)
+      next.message = "Message should be at least 10 characters";
     return next;
   };
 
@@ -31,15 +75,27 @@ const Contact = () => {
     const v = validate();
     setErrors(v);
     if (Object.keys(v).length) return;
+
     setLoading(true);
     try {
-      // TODO: replace with your API endpoint if needed:
-      // await axios.post('/contact', form)
+      // Replace this with your API call, e.g.:
+      // await axios.post('/api/contact', form)
       await new Promise((r) => setTimeout(r, 900));
       setOk(true);
-      setForm({ name: "", email: "", message: "", website: "" });
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        reason: "",
+        message: "",
+        website: "",
+      });
+      // Optionally auto-hide success after a while:
+      // setTimeout(() => setOk(false), 4000);
     } catch {
-      // You can also show an error toast here
+      setOk(false);
+      // You can show a toast here if you use react-toastify
     } finally {
       setLoading(false);
     }
@@ -65,7 +121,7 @@ const Contact = () => {
           Contact Us
         </h2>
         <p className="mt-3 text-gray-600 md:text-lg">
-          Have questions or feedback? We’d love to hear from you.
+          Have questions about bookings or doctors? We’re here to help.
         </p>
       </div>
 
@@ -146,7 +202,7 @@ const Contact = () => {
           {/* optional map */}
           <div className="rounded-2xl overflow-hidden bg-white/90 backdrop-blur border border-indigo-50 shadow-xl">
             <iframe
-              title="MCMS Location"
+              title="Clinic Location"
               src="https://www.google.com/maps?q=Dhaka,Bangladesh&output=embed"
               className="w-full h-64"
               loading="lazy"
@@ -160,7 +216,9 @@ const Contact = () => {
           className="rounded-2xl bg-white/90 backdrop-blur border border-indigo-50 shadow-xl p-6"
           noValidate
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Send us a message</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Send us a message
+          </h3>
 
           {/* honeypot */}
           <input
@@ -173,40 +231,125 @@ const Contact = () => {
             autoComplete="off"
           />
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          {/* row 1: name + email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.name ? "border-red-300" : "border-gray-300"
+                }`}
+                placeholder="Your name"
+                required
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.email ? "border-red-300" : "border-gray-300"
+                }`}
+                placeholder="you@example.com"
+                required
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
+            </div>
+          </div>
+
+          {/* row 2: phone + reason */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone (optional)
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.phone ? "border-red-300" : "border-gray-300"
+                }`}
+                placeholder="+880 1234 567 890"
+                aria-invalid={!!errors.phone}
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reason
+              </label>
+              <select
+                name="reason"
+                value={form.reason}
+                onChange={handleChange}
+                className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.reason ? "border-red-300" : "border-gray-300"
+                }`}
+                aria-invalid={!!errors.reason}
+              >
+                {reasons.map((r) => (
+                  <option key={r.value} value={r.value} disabled={r.value === ""}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+              {errors.reason && (
+                <p className="text-red-500 text-sm mt-1">{errors.reason}</p>
+              )}
+            </div>
+          </div>
+
+          {/* subject */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Subject
+            </label>
             <input
               type="text"
-              name="name"
-              value={form.name}
+              name="subject"
+              value={form.subject}
               onChange={handleChange}
               className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                errors.name ? "border-red-300" : "border-gray-300"
+                errors.subject ? "border-red-300" : "border-gray-300"
               }`}
-              placeholder="Your name"
+              placeholder="e.g., Need to reschedule appointment"
               required
+              aria-invalid={!!errors.subject}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.subject && (
+              <p className="text-red-500 text-sm mt-1">{errors.subject}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                errors.email ? "border-red-300" : "border-gray-300"
-              }`}
-              placeholder="you@example.com"
-              required
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+          {/* message */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Message
+            </label>
             <textarea
               rows="5"
               name="message"
@@ -217,18 +360,24 @@ const Contact = () => {
               }`}
               placeholder="Your message"
               required
+              aria-invalid={!!errors.message}
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>Min 10 characters</span>
-              <span>{form.message.length}/1000</span>
+              <span>
+                {form.message.length}/{MAX_MESSAGE}
+              </span>
             </div>
-            {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+            {errors.message && (
+              <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+            )}
           </div>
 
+          {/* submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-lg transition active:scale-[0.98] disabled:opacity-70"
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-lg transition active:scale-[0.98] disabled:opacity-70"
           >
             {loading ? <Loader2 className="animate-spin" size={18} /> : null}
             {loading ? "Sending..." : "Send Message"}
