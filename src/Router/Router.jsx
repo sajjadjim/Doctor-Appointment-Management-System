@@ -1,0 +1,133 @@
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router";
+import HomePageLayout from "../Layouts/HomePageLayout";
+import { Component } from "react";
+import Home from "../Pages/Home/Home";
+import Login from "../Pages/Authentication/Login";
+import Authentication from "../Layouts/Authentication";
+import About from "../Pages/About/About";
+import Register from "../Pages/Authentication/Register";
+import AvailableBootcamp from "../Pages/Available Bootcamp/AvailableBootcamp";
+import CampDetails from "../Pages/Available Bootcamp/CampDetails";
+import CampRegistrationForm from "../Pages/Camaping Related work/CampResistrationForm";
+import Dashboard from "../Layouts/Dashboard";
+import ManageRegisteredCamp from "../Pages/Dashboard/Organizer Dashboard/ManageRegisteredCamp";
+import Contact from "../Pages/Contact/Contact";
+import AddBootcamp from "../Pages/Dashboard/Organizer Dashboard/Add New Bootcamp/AddBootCamp";
+import PrivateRoute from "../Routes/PrivateRoute";
+import ManageCamps from "../Pages/Dashboard/Organizer Dashboard/Manage Camps/ManageCamps";
+import RegisteredCamp from "../Pages/Dashboard/Participant Dashboard/Registered camp/RegisteredCamp";
+import Payment from "../Pages/Dashboard/Participant Dashboard/Payment system/Payment";
+import PaymentHistory from "../Pages/Dashboard/Participant Dashboard/Payment History/PaymentHistory";
+import ParticipantProfile from "../Pages/Dashboard/Participant Dashboard/Participant Profile/ParticipantProfile";
+import OrganizerProfile from "../Pages/Dashboard/Organizer Dashboard/Organizer Profile/OrganizerProfile";
+import Admin from "../Routes/Admin";
+import Forbidden from "../Forbidden Page/Forbidden";
+import Analytics from "../Pages/Dashboard/Participant Dashboard/Analytics/Analytics";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: HomePageLayout,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: '/about',
+        Component: About
+      },
+      {
+        path: '/contact',
+        Component: Contact
+      }
+      ,
+      {
+        path: 'availableBootcamp',
+        element: <PrivateRoute><AvailableBootcamp /></PrivateRoute>,
+        loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps') // Load all camps data
+      },
+      {
+        path: '/camps/:id',
+        element: <CampDetails />,
+        loader: ({ params }) => fetch(`https://b11a12-server-side-sajjadjim.vercel.app/camps/${params.id}`)
+      },
+      {
+        path: '/registration/:id',
+        element: <CampRegistrationForm />,
+        loader: ({ params }) => fetch(`https://b11a12-server-side-sajjadjim.vercel.app/camps/${params.id}`)
+      }
+    ]
+  },
+  {
+    path: "/auth",
+    Component: Authentication,
+    children: [
+      {
+        index: true,
+        element: <Authentication />
+      },
+      {
+        path: 'login',
+        Component: Login
+      },
+      {
+        path: 'register',
+        Component: Register
+      }
+    ]
+  },
+  {
+path: "/forbidden",
+Component : Forbidden
+  },
+  {
+    path: "/dashboard",
+    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+    children: [
+      {
+        path: 'manage_registered_camps',
+        element: <Admin><ManageRegisteredCamp /></Admin>,
+        loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps')
+      },
+      {
+        path: 'addNewBootcamp',
+        element: <Admin><AddBootcamp></AddBootcamp></Admin>
+      },
+      {
+        path: 'manageCamps',
+        element: <Admin><ManageCamps></ManageCamps></Admin>
+      },
+      {
+        path: '/dashboard/registered-camps'
+        , element: <RegisteredCamp></RegisteredCamp>
+      },
+      {
+        path: 'organizer-profile',
+        element: <Admin><OrganizerProfile></OrganizerProfile></Admin>
+      }
+      ,
+      {
+        path: 'payment/:campId',
+        Component: Payment
+
+      },
+      {
+        path: 'payment-history',
+        element: <PaymentHistory></PaymentHistory>
+      },
+      {
+        path: 'participant-profile',
+        element: <ParticipantProfile></ParticipantProfile>
+      },
+      {
+        path:'analytics',
+        element :<Analytics></Analytics>
+      }
+    ]
+  }
+]);
+
