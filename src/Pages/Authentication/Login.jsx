@@ -1,124 +1,236 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import useAuth from "../../Hook/useAuth";
 import { toast, ToastContainer } from "react-toastify";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, Link } from "react-router";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router";
-import { Brain } from 'lucide-react';
-import registerLottie from '../../../src/assets/animation authentication/login.json';
-import Lottie from 'lottie-react';
+import { Brain, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import Lottie from "lottie-react";
+import registerLottie from "../../../src/assets/animation authentication/login.json";
 
 const Login = () => {
-    useEffect(()=>{
-        document.title = "Login"
-    })
-    const { signInWithGoogle, signIn } = useAuth();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
-    const location = useLocation()
-    const navigate = useNavigate()
+  useEffect(() => {
+    document.title = "Login";
+  }, []);
 
-    const onSubmit = (data) => {
-        // console.log("Login Data:", data);
-        signIn(data.email, data.password)
-            .then(() => {
-                toast.success("Successfully Log in Done ✅");
-                // 
-                setTimeout(() => {
-                    navigate(`${location.state ? location.state : '/'}`)
-                }, 1000)
-            }).catch((error) => {
-                alert(error.message)
-                toast.error("Log in failed ❌");
-            })
-    };
+  const { signInWithGoogle, signIn } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showPass, setShowPass] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [activeRole, setActiveRole] = useState("patient"); // 'patient' | 'doctor'
 
-    // login with google account pop up system 
-    const handleGoogleLogin = async () => {
-        signInWithGoogle()
-            .then(() => {
-                // The signed-in user info.
-                // const user = result.user;
-                // console.log('Google User:', user);
-                toast.success("Signed in with Google ✅");
-                setTimeout(() => {
-                    navigate(`${location.state ? location.state : '/'}`)
-                }, 1000)
-            })
-            .catch((error) => {
-                console.error('Google sign-in error:', error);
-                toast.error("Google Sign-in failed ❌");
-            });
-    };
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4">
-            <ToastContainer />
-            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl shadow-indigo-400 w-full max-w-sm sm:max-w-md transition-all duration-300">
-                <span className=" justify-center grid"><Lottie className='w-25' animationData={registerLottie} loop={true}></Lottie></span>
-                <div className="text-2xl  flex sm:text-3xl  items-center font-bold mb-6 text-center text-blue-600"><Link to='/'><Brain></Brain></Link> <span className="text-center ml-30"> Login</span></div>
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+      role: "patient",
+    },
+  });
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Email */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input
-                            type="email"
-                            {...register("email", { required: "Email is required" })}
+  // Keep form's role in sync with the toggle
+  useEffect(() => {
+    setValue("role", activeRole);
+  }, [activeRole, setValue]);
 
-                            placeholder="Enter your email"
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-                    </div>
+  const redirectTo = useMemo(
+    () => (location.state ? location.state : "/"),
+    [location.state]
+  );
 
-                    {/* Password */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            {...register("password", {
-                                required: "Password is required",
-                                minLength: { value: 6, message: "Minimum 6 characters" },
-                            })}
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                            placeholder="Enter your password"
-                        />
-                        {errors.password && (
-                            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-                        )}
-                    </div>
+  const onSubmit = async (data) => {
+    try {
+      setSubmitting(true);
+      // If backend accepts role, great; if not, it will ignore.
+      await signIn(data.email, data.password);
+      toast.success("Successfully logged in ✅");
+      setTimeout(() => navigate(redirectTo), 900);
+    } catch (err) {
+      console.error(err);
+      toast.error("Login failed ❌");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-indigo-100 via-pink-80 to-indigo-500 text-shadow-black font-semibold cursor-pointer shadow-md placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white">
-                        Login
-                    </button>
-                </form>
+  const handleGoogleLogin = async () => {
+    try {
+      setSubmitting(true);
+      await signInWithGoogle();
+      toast.success("Signed in with Google ✅");
+      setTimeout(() => navigate(redirectTo), 900);
+    } catch (err) {
+      console.error("Google sign-in error:", err);
+      toast.error("Google Sign-in failed ❌");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-                {/* Divider */}
-                <div className="flex items-center my-4">
-                    <hr className="flex-grow border-t border-gray-300" />
-                    <span className="mx-2 text-sm text-gray-500">OR</span>
-                    <hr className="flex-grow border-t border-gray-300" />
-                </div>
-
-                {/* Google Sign-In */}
-                <button
-                    onClick={handleGoogleLogin}
-                    className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl py-2 bg-gradient-to-r from-indigo-500 via-pink-80 to-indigo-100 text-shadow-black font-semibold cursor-pointer shadow-md placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                >
-                    <FcGoogle className="mr-3" />
-                    Log in with Google
-                </button>
-                <p className="text-center mt-2">Create an account <Link to='/auth/register' className="border-b  border-blue-500 text-blue-500">register</Link></p>
-            </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-white to-violet-100">
+      <ToastContainer />
+      <div className="w-full max-w-md rounded-2xl border border-black/5 bg-white/80 backdrop-blur shadow-xl">
+        {/* Header / Brand */}
+        <div className="px-6 pt-6">
+          <div className="flex items-center justify-center gap-2">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent"
+              aria-label="Go to home"
+            >
+              <Brain className="opacity-90" />
+              Doctor Appointment <span className="opacity-75">System</span>
+            </Link>
+          </div>
         </div>
-    );
+
+        {/* Lottie */}
+        <div className="px-6">
+          <Lottie className="w-56 mx-auto -mt-2 -mb-2" animationData={registerLottie} loop />
+        </div>
+
+        {/* Role Toggle */}
+        <div className="px-6">
+          <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-gray-100">
+            <button
+              type="button"
+              onClick={() => setActiveRole("patient")}
+              className={[
+                "rounded-lg py-2 text-sm font-semibold transition",
+                activeRole === "patient"
+                  ? "bg-white text-indigo-600 shadow"
+                  : "text-gray-600 hover:text-indigo-600",
+              ].join(" ")}
+              aria-pressed={activeRole === "patient"}
+            >
+              Patient
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveRole("doctor")}
+              className={[
+                "rounded-lg py-2 text-sm font-semibold transition",
+                activeRole === "doctor"
+                  ? "bg-white text-indigo-600 shadow"
+                  : "text-gray-600 hover:text-indigo-600",
+              ].join(" ")}
+              aria-pressed={activeRole === "doctor"}
+            >
+              Doctor
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+            <ShieldCheck size={14} className="text-emerald-500" />
+            Select your role to continue
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="px-6 pt-4 pb-6 space-y-4">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              {...register("email", { required: "Email is required" })}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-red-600 text-xs mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPass ? "text" : "password"}
+                placeholder="Enter your password"
+                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-11 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Minimum 6 characters" },
+                })}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? "password-error" : undefined}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass((s) => !s)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
+                aria-label={showPass ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {errors.password && (
+              <p id="password-error" className="text-red-600 text-xs mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Hidden role to keep RHF aware */}
+          <input type="hidden" {...register("role")} />
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold py-3 shadow-md hover:opacity-95 active:scale-[.99] transition disabled:opacity-60"
+          >
+            {submitting ? "Logging in..." : "Login"}
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="h-px bg-gray-300 flex-1" />
+            <span className="text-xs text-gray-500">OR</span>
+            <div className="h-px bg-gray-300 flex-1" />
+          </div>
+
+          {/* Google */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={submitting}
+            className="w-full rounded-xl border border-gray-300 bg-white py-2.5 shadow-sm hover:bg-gray-50 active:scale-[.99] transition flex items-center justify-center gap-2"
+          >
+            <FcGoogle className="text-xl" />
+            <span className="font-semibold">Log in with Google</span>
+          </button>
+
+          {/* Register link */}
+          <p className="text-center text-sm text-gray-600">
+            New here?{" "}
+            <Link
+              to="/auth/register"
+              className="text-indigo-600 border-b border-indigo-400 hover:text-indigo-700"
+            >
+              Create an account
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

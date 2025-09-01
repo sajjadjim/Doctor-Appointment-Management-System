@@ -1,249 +1,423 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import registerLottie from '../../../src/assets/animation authentication/register.json';
+import registerLottie from "../../../src/assets/animation authentication/register.json";
 import useAuth from "../../Hook/useAuth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
-import { Link, useLocation } from "react-router";
-import { useNavigate } from "react-router";
-import Lottie from 'lottie-react';
+import { Link, useLocation, useNavigate } from "react-router";
+import Lottie from "lottie-react";
 import { toast, ToastContainer } from "react-toastify";
-import { Brain } from 'lucide-react';
+import { Brain, Stethoscope } from "lucide-react";
 import useAxiosSecure from "../../Hook/useAxiosSecure";
 
+const DOCTOR_SPECIALTIES = [
+  "Cardiologist",
+  "Dentist",
+  "Neurologist",
+  "Dermatologist",
+  "General Physician",
+  "Pediatrician",
+  "Orthopedic",
+  "Gynecologist",
+  "Ophthalmologist",
+  "Psychiatrist",
+];
+
 const Register = () => {
-    useEffect(() => {
-        document.title = "Register"
-    })
-    const {
-        register,
-        handleSubmit,
-        // watch,
-        formState: { errors },
-    } = useForm();
-    // axios secure the from react the data from the server 
-    const axiosSecure = useAxiosSecure()
-    const [profilePic, setProfilePic] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  useEffect(() => {
+    document.title = "Register";
+  }, []);
 
-    const { updateUserProfile, createUser, user, signInWithGoogle } = useAuth();
-    const location = useLocation();
-    const navigate = useNavigate();
-    const from = location.state?.from || '/auth/login';
-    // console.log(user)
-    const [errorMessage, setErrorMessage] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    watch,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      specialization: "",
+    },
+  });
 
-    const onSubmit = async (data) => {
-        if (data.password !== data.confirmPassword) {
-            setErrorMessage("❌ Passwords do not match");
-            return;
-        }
-        // console.log(data)
-        // create user in Firebase 
-        createUser(data.email, data.password)
-            .then(async (result) => {
-                console.log(result.user)
-            });
+  const axiosSecure = useAxiosSecure();
+  const [activeRole, setActiveRole] = useState("patient");
+  const [profilePic, setProfilePic] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-        const userInfo = {
-            email: data.email,
-            image: profilePic,
-            name: data.name,
-            role: "participant",
-            created_at: new Date().toISOString(),
-            last_log_in: new Date().toISOString()
-        }
-        // Data inserted to the mongoDB 
-        const userResponse = await axiosSecure.post('/users', userInfo)
-        console.log("User response:", userResponse.data);
+  const { updateUserProfile, createUser, user, signInWithGoogle } = useAuth();
 
-        const insertedId = userResponse?.data?.insertedId || userResponse?.data?.data?.insertedId;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const redirectTo = useMemo(
+    () => (location.state ? location.state : "/auth/login"),
+    [location.state]
+  );
 
-        const userProfile = {
-            displayName: data.name,
-            photoURL: profilePic
-        }
-        updateUserProfile(userProfile)
-            .then(() => {
-                // console.log('profile name pic updated');
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        if (insertedId) {
-            // setErrorMessage("");
-            import("sweetalert2").then(Swal => {
-                Swal.default.fire({
-                    icon: "success",
-                    title: "Registration Successful",
-                    text: "User registered successfully!",
-                });
-                setTimeout(() => {
-                    navigate(`${location.state ? location.state : '/auth/login'}`)
-                }, 1000)
-            });
-            console.log("User registered successfully:", insertedId);
-        } else {
-            setErrorMessage("❌ Registration failed. Please try again.");
-            import("sweetalert2").then(Swal => {
-                Swal.default.fire({
-                    icon: "error",
-                    title: "Registration Failed",
-                    text: "Please try again.",
-                });
-                navigate(from);
-            });
-        }
-    };
+  const password = watch("password");
 
+  const handleImageUpload = async (e) => {
+    const image = e.target.files?.[0];
+    if (!image) return;
+    const formData = new FormData();
+    formData.append("image", image);
+    const url = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_image_upload_key
+    }`;
+    try {
+      const res = await axios.post(url, formData);
+      const urlOut = res?.data?.data?.url;
+      if (urlOut) setProfilePic(urlOut);
+      else toast.error("Image upload failed");
+    } catch (err) {
+      console.error(err);
+      toast.error("Image upload failed");
+    }
+  };
 
-    // Google Account login system and Database store the data  and update data on firebase also
-    const handleGoogleSignUp = async () => {
-        signInWithGoogle()
-            .then(async () => {
-                // The signed-in user info.
-                const userInfo = {
-                    email: user.email
-                    , name: user.displayName || "No Name",
-                    image: user.photoURL || "https://cdn-icons-png.freepik.com/512/6858/6858485.png",
-                    role: "participant",
-                    created_at: new Date().toISOString(),
-                    last_log_in: new Date().toISOString()
-                }
-                const userResponse = await axiosSecure.post('/users', userInfo)
-                console.log("User response:", userResponse.data);
-
-                toast.success("Signed in with Google ✅");
-                setTimeout(() => {
-                    navigate(`${location.state ? location.state : '/'}`)
-                }, 2000)
-            })
-            .catch((error) => {
-                console.error('Google sign-in error:', error);
-                toast.error("Google Sign-in failed ❌");
-            });
-    };
-
-    const handleImageUpload = async (e) => {
-        const image = e.target.files[0];
-        // console.log(image)
-        const formData = new FormData();
-        formData.append('image', image);
-        const imagUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`
-        const res = await axios.post(imagUploadUrl, formData)
-        setProfilePic(res.data.data.url);
+  const onSubmit = async (data) => {
+    setErrorMessage("");
+    if (data.password !== data.confirmPassword) {
+      setErrorMessage("❌ Passwords do not match");
+      return;
+    }
+    if (activeRole === "doctor" && !data.specialization) {
+      setErrorMessage("❌ Please select a specialization");
+      return;
     }
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4">
-            <ToastContainer />
-            <div className="w-full max-w-md bg-white rounded-xl shadow-2xl shadow-indigo-300 p-5 ">
-                <h2 className="text-2xl font-bold text-center text-gray-800"><Link to='/'><Brain className="text-indigo-500"></Brain></Link> Register</h2>
-                <div className="text-center grid justify-center"> <Lottie className='w-25' animationData={registerLottie} loop={true}></Lottie></div>
-                {errorMessage && (
-                    <div className="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded">
-                        {errorMessage}
-                    </div>
-                )}
-                <p className="text-center font-bold text-2xl my-2 ">Create a Account</p>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 ">User Name</label>
-                        <input
-                            {...register("name", { required: "Name is required" })}
-                            type="text"
-                            placeholder="Your name"
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Photo Upload</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        {profilePic && (
-                            <img src={profilePic} alt="Profile Preview" className="mt-2 w-16 h-16 rounded-full object-cover" />
-                        )}
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            {...register("email", { required: "Email is required" })}
-                            type="email"
-                            placeholder="your@email.com"
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-                    </div>
+    setSubmitting(true);
+    try {
+      const cred = await createUser(data.email, data.password);
+      const fbUser = cred?.user;
 
-                    <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            {...register("password", { required: "Password is required", minLength: 6 })}
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute  right-2 top-11 cursor-pointer text-gray-500"
-                        >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-                    </div>
+      await updateUserProfile({
+        displayName: data.name,
+        photoURL: profilePic,
+      });
 
+      const userInfo = {
+        email: data.email,
+        image:
+          profilePic ||
+          "https://cdn-icons-png.freepik.com/512/6858/6858485.png",
+        name: data.name,
+        role: activeRole,
+        ...(activeRole === "doctor" ? { specialization: data.specialization } : {}),
+        created_at: new Date().toISOString(),
+        last_log_in: new Date().toISOString(),
+      };
 
-                    <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                        <input
-                            {...register("confirmPassword", { required: "Please confirm password" })}
-                            type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Confirm Password"
-                            className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-2 top-11 cursor-pointer text-gray-500"
-                        >
-                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                        {errors.confirmPassword && (
-                            <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
-                        )}
-                    </div>
+      const userResponse = await axiosSecure.post("/users", userInfo);
+      const insertedId =
+        userResponse?.data?.insertedId ||
+        userResponse?.data?.data?.insertedId;
 
+      if (insertedId) {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "success",
+          title: "Registration Successful",
+          text: "User registered successfully!",
+        });
+        reset();
+        setProfilePic("");
+        setActiveRole("patient");
+        navigate(redirectTo);
+      } else {
+        throw new Error("DB insert failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("❌ Registration failed. Please try again.");
+      const Swal = (await import("sweetalert2")).default;
+      await Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: "Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-                    <button
-                        type="submit"
-                        className="w-full px-4 py-3 mt-2 rounded-xl bg-gradient-to-r from-indigo-100 via-pink-80 to-indigo-500 text-shadow-black font-semibold cursor-pointer shadow-md placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white">
-                        Register
-                    </button>
-                </form>
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-500">Or</p>
-                    <button
-                        onClick={handleGoogleSignUp}
-                        className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl py-2 bg-gradient-to-r from-indigo-500 via-pink-80 to-indigo-100 text-shadow-black font-semibold cursor-pointer shadow-md placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
-                    >
-                        <FcGoogle className="mr-3" />
-                        Sign up with Google
-                    </button>
-                </div>
-                <p className="text-center mt-2">Already create account <Link to='/auth/login' className="border-b  border-blue-500 text-blue-500">login</Link></p>
-            </div>
-            <div className="text-center  lg:text-left">
-            </div>
+  const handleGoogleSignUp = async () => {
+    setSubmitting(true);
+    try {
+      await signInWithGoogle();
+      const userInfo = {
+        email: user?.email,
+        name: user?.displayName || "No Name",
+        image:
+          user?.photoURL ||
+          "https://cdn-icons-png.freepik.com/512/6858/6858485.png",
+        role: activeRole,
+        created_at: new Date().toISOString(),
+        last_log_in: new Date().toISOString(),
+      };
+      await axiosSecure.post("/users", userInfo);
+      toast.success("Signed up with Google ✅");
+      setTimeout(() => navigate("/"), 1000);
+    } catch (err) {
+      console.error("Google sign-up error:", err);
+      toast.error("Google Sign-in failed ❌");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4">
+      <ToastContainer />
+      <div className="w-full max-w-2xl bg-white/90 backdrop-blur rounded-2xl shadow-2xl border border-black/5 p-6">
+        {/* Brand */}
+        <h2 className="text-2xl font-extrabold text-center text-gray-900 flex items-center justify-center gap-2">
+          <Link to="/">
+            <Brain className="text-indigo-600" />
+          </Link>
+          Register
+        </h2>
+
+        {/* Lottie */}
+        <div className="text-center grid justify-center">
+          <Lottie className="w-56" animationData={registerLottie} loop />
         </div>
-    );
+
+        {/* Role Toggle */}
+        <div className="px-1 my-2">
+          <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-gray-100">
+            <button
+              type="button"
+              onClick={() => setActiveRole("patient")}
+              className={[
+                "rounded-lg py-2 text-sm font-semibold transition",
+                activeRole === "patient"
+                  ? "bg-white text-indigo-600 shadow"
+                  : "text-gray-600 hover:text-indigo-600",
+              ].join(" ")}
+            >
+              Patient
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveRole("doctor")}
+              className={[
+                "rounded-lg py-2 text-sm font-semibold transition",
+                activeRole === "doctor"
+                  ? "bg-white text-indigo-600 shadow"
+                  : "text-gray-600 hover:text-indigo-600",
+              ].join(" ")}
+            >
+              Doctor
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-gray-600 flex items-center gap-1">
+            <Stethoscope size={14} className="text-emerald-600" />
+            {activeRole === "doctor"
+              ? "Registering as Doctor — please select a specialization."
+              : "Registering as Patient."}
+          </p>
+        </div>
+
+        {errorMessage && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 mb-3 rounded">
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <input
+                {...register("name", { required: "Name is required" })}
+                type="text"
+                placeholder="Your name"
+                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Photo Upload
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {profilePic && (
+                <img
+                  src={profilePic}
+                  alt="Profile Preview"
+                  className="mt-2 w-14 h-14 rounded-full object-cover border"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                {...register("email", { required: "Email is required" })}
+                type="email"
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </div>
+
+            {activeRole === "doctor" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Specialization
+                </label>
+                <select
+                  {...register("specialization", {
+                    required:
+                      activeRole === "doctor"
+                        ? "Specialization is required"
+                        : false,
+                  })}
+                  className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select a specialization
+                  </option>
+                  {DOCTOR_SPECIALTIES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                {errors.specialization && (
+                  <p className="text-red-500 text-sm">
+                    {errors.specialization.message}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Row 3 (Passwords) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum 6 characters",
+                  },
+                })}
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-2 top-9 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password.message}</p>
+              )}
+            </div>
+
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <input
+                {...register("confirmPassword", {
+                  required: "Please confirm password",
+                  validate: (v) =>
+                    v === password || "Passwords do not match",
+                })}
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((s) => !s)}
+                className="absolute right-2 top-9 text-gray-500"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-md hover:opacity-95 active:scale-[.99] transition disabled:opacity-60"
+          >
+            {submitting ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        {/* Google Sign-up */}
+        <div className="mt-5 text-center">
+          <p className="text-sm text-gray-500">Or</p>
+          <button
+            onClick={handleGoogleSignUp}
+            disabled={submitting}
+            className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white py-2.5 shadow-sm hover:bg-gray-50 active:scale-[.99] transition"
+          >
+            <FcGoogle className="text-xl" />
+            <span className="font-semibold">
+              Sign up with Google ({activeRole})
+            </span>
+          </button>
+        </div>
+
+        <p className="text-center mt-3 text-sm">
+          Already have an account?{" "}
+          <Link
+            to="/auth/login"
+            className="border-b border-blue-500 text-blue-600 hover:text-blue-700"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Register;
