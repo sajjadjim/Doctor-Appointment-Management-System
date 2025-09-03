@@ -80,6 +80,8 @@ const DoctorDetails = () => {
         patientId: currentUser._id,
         patientName: currentUser.name,
         patientEmail: currentUser.email,
+        specialization: doctor.specialization,
+        fee: doctor.fee,
         appointmentDate,
         appointmentTime,
       };
@@ -125,6 +127,11 @@ const DoctorDetails = () => {
               <Phone size={16} /> {doctor.phone}
             </p>
           )}
+          {doctor.specialization && (
+            <p className="flex items-center gap-2">
+              Specialist: {doctor.specialization}
+            </p>
+          )}
           {doctor.location && (
             <p className="flex items-center gap-2">
               <MapPin size={16} /> {doctor.location}
@@ -137,7 +144,7 @@ const DoctorDetails = () => {
           )}
           {doctor.fee && (
             <p className="flex items-center gap-2">
-              Fee: <span className="font-semibold">৳{Number(doctor.fee).toLocaleString()}</span>
+              Fee: <span className="font-semibold">${Number(doctor.fee).toLocaleString()}</span>
             </p>
           )}
         </div>

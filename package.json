@@ -17,6 +17,7 @@
     "@tanstack/react-query-devtools": "^5.82.0",
     "aos": "^2.3.4",
     "axios": "^1.10.0",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "firebase": "^11.10.0",
     "framer-motion": "^12.23.5",

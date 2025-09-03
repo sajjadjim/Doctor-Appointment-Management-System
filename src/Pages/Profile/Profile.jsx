@@ -38,6 +38,7 @@ const Profile = () => {
             phone: loggedInUser.phone || "",
             image: loggedInUser.image || "",
             address: loggedInUser.address || "",
+            fee: loggedInUser.fee || "",
           });
         }
       })
@@ -157,6 +158,18 @@ const handleUpdate = async () => {
                 value={profile.specialization}
                 disabled
                 className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+              />
+            </div>
+          )}
+            {profile.role === "doctor" && (
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Fee ($)</label>
+              <input
+                type="number"
+                name="fee"
+                value={profile.fee}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
           )}

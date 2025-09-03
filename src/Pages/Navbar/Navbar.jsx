@@ -33,7 +33,7 @@ const Navbar = () => {
   const navItems = useMemo(
     () => [
       { label: "Home", to: "/", Icon: Home },
-      { label: "Doctors", to: "/availableBootcamp", Icon: Stethoscope },
+      { label: "Doctors", to: "/doctors", Icon: Stethoscope },
       { label: "About", to: "/about", Icon: User },
       { label: "Contact", to: "/contact", Icon: Mail },
     ],
@@ -157,8 +157,6 @@ const Navbar = () => {
                       </p>
                     </div>
                   </button>
-
-                  {/* Controlled dropdown */}
                   {dropdownOpen && (
                     <ul className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-xl border border-black/5 p-2 z-50">
                       <li className="px-2 py-2">
@@ -170,13 +168,24 @@ const Navbar = () => {
                         </p>
                       </li>
                       <li>
-                        <Link
-                          to="/dashboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
-                        >
-                          <LayoutDashboard size={16} /> Dashboard
-                        </Link>
+                        {currentUser?.role === "patient" && (
+                          <Link
+                            to="/dashboard/patient"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                          >
+                            <LayoutDashboard size={16} /> Dashboard
+                          </Link>
+                        )}
+                        {currentUser?.role === "doctor" && (
+                          <Link
+                            to="/dashboard/doctor"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                          >
+                            <LayoutDashboard size={16} /> Dashboard
+                          </Link>
+                        )}
                         <Link
                           to="/profile"
                           onClick={() => setDropdownOpen(false)}
@@ -218,7 +227,6 @@ const Navbar = () => {
                 </div>
               )}
 
-              {/* Mobile toggle */}
               <button
                 onClick={toggleMenu}
                 className="md:hidden p-2 rounded-lg hover:bg-black/5"
