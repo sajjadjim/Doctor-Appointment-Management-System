@@ -56,7 +56,7 @@ npm install
 npm run dev
 ```
 
-The app will be available at [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
+The app will be available at [http://localhost:5173](https://medical-camp-management-4da72.web.app/) (or the port shown in your terminal).
 
 ---
 
