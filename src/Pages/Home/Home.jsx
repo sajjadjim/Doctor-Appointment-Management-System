@@ -4,7 +4,7 @@ import Section2 from './section-2/Section2';
 import Section3 from './section-3/Section3';
 import Count from './Coun t Information/Count';
 import Section4 from './Section 4/Section4';
-import FeedBack from './Feedback Part/FeedBack';
+
 
 
 const Home = () => {
@@ -18,8 +18,6 @@ const Home = () => {
             <Count></Count>
             <Section3></Section3>
             <Section4></Section4>
-            <FeedBack></FeedBack>
-            {/* <Faq></Faq> */}
         </div>
     );
 };

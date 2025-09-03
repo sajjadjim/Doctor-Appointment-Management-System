@@ -9,21 +9,14 @@ import Login from "../Pages/Authentication/Login";
 import Authentication from "../Layouts/Authentication";
 import About from "../Pages/About/About";
 import Register from "../Pages/Authentication/Register";
-import AvailableBootcamp from "../Pages/Available Bootcamp/AvailableBootcamp";
-import CampDetails from "../Pages/Available Bootcamp/CampDetails";
+import AvailableBootcamp from "../Pages/Available_Doctor/AvailableDoctor";
 import CampRegistrationForm from "../Pages/Camaping Related work/CampResistrationForm";
 import Dashboard from "../Layouts/Dashboard";
-import ManageRegisteredCamp from "../Pages/Dashboard/Organizer Dashboard/ManageRegisteredCamp";
 import Contact from "../Pages/Contact/Contact";
-import AddBootcamp from "../Pages/Dashboard/Organizer Dashboard/Add New Bootcamp/AddBootCamp";
 import PrivateRoute from "../Routes/PrivateRoute";
-import ManageCamps from "../Pages/Dashboard/Organizer Dashboard/Manage Camps/ManageCamps";
-import RegisteredCamp from "../Pages/Dashboard/Participant Dashboard/Registered camp/RegisteredCamp";
-import ParticipantProfile from "../Pages/Dashboard/Participant Dashboard/Participant Profile/ParticipantProfile";
-import OrganizerProfile from "../Pages/Dashboard/Organizer Dashboard/Organizer Profile/OrganizerProfile";
-import Admin from "../Routes/Admin";
 import Forbidden from "../Forbidden Page/Forbidden";
-import Analytics from "../Pages/Dashboard/Participant Dashboard/Analytics/Analytics";
+import DoctorDetails from "../Pages/Available_Doctor/DoctorDetails";
+import Profile from "../Pages/Profile/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -46,17 +39,20 @@ export const router = createBrowserRouter([
       {
         path: 'availableBootcamp',
         element: <AvailableBootcamp />,
-        loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps') // Load all camps data
+        loader: () => fetch('http://localhost:3000/users') // Load all camps data
       },
       {
-        path: '/camps/:id',
-        element: <CampDetails />,
-        loader: ({ params }) => fetch(`https://b11a12-server-side-sajjadjim.vercel.app/camps/${params.id}`)
+        path: '/doctor/:id',
+        element: < DoctorDetails/>,
+        loader: ({ params }) => fetch(`http://localhost:3000/users/${params.id}`)
       },
       {
         path: '/registration/:id',
         element: <CampRegistrationForm />,
-        loader: ({ params }) => fetch(`https://b11a12-server-side-sajjadjim.vercel.app/camps/${params.id}`)
+        loader: ({ params }) => fetch(`http://localhost:3000/users/${params.id}`)
+      },{
+        path:'/profile',
+        Component : Profile
       }
     ]
   },
@@ -82,40 +78,5 @@ export const router = createBrowserRouter([
 path: "/forbidden",
 Component : Forbidden
   },
-  {
-    path: "/dashboard",
-    element: <Dashboard></Dashboard>,
-    children: [
-      {
-        path: 'manage_registered_camps',
-        element: <ManageRegisteredCamp />,
-        loader: () => fetch('https://b11a12-server-side-sajjadjim.vercel.app/camps')
-      },
-      {
-        path: 'addNewBootcamp',
-        element: <AddBootcamp></AddBootcamp>
-      },
-      {
-        path: 'manageCamps',
-        element: <ManageCamps></ManageCamps>
-      },
-      {
-        path: '/dashboard/registered-camps'
-        , element: <RegisteredCamp></RegisteredCamp>
-      },
-      {
-        path: 'organizer-profile',
-        element: <OrganizerProfile></OrganizerProfile>
-      },
-      {
-        path: 'participant-profile',
-        element: <ParticipantProfile></ParticipantProfile>
-      },
-      {
-        path:'analytics',
-        element :<Analytics></Analytics>
-      }
-    ]
-  }
 ]);
 

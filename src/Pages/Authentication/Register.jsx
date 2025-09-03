@@ -149,22 +149,46 @@ const Register = () => {
     }
   };
 
+  // ====== UPDATED GOOGLE SIGN-UP FUNCTION ======
   const handleGoogleSignUp = async () => {
     setSubmitting(true);
     try {
-      await signInWithGoogle();
+      const cred = await signInWithGoogle(); // Get credentials
+      const googleUser = cred?.user;
+
+      if (!googleUser?.email) {
+        throw new Error("Google account does not have an email");
+      }
+
+      // Prepare user info
       const userInfo = {
-        email: user?.email,
-        name: user?.displayName || "No Name",
+        email: googleUser.email,
+        name: googleUser.displayName || "No Name",
         image:
-          user?.photoURL ||
+          googleUser.photoURL ||
           "https://cdn-icons-png.freepik.com/512/6858/6858485.png",
         role: activeRole,
         created_at: new Date().toISOString(),
         last_log_in: new Date().toISOString(),
       };
-      await axiosSecure.post("/users", userInfo);
-      toast.success("Signed up with Google ✅");
+
+      // Check if user already exists in DB
+      const existingUsers = await axiosSecure.get("/users");
+      const userExists = existingUsers.data?.find(
+        (u) => u.email === googleUser.email
+      );
+
+      if (!userExists) {
+        await axiosSecure.post("/users", userInfo);
+        toast.success("Signed up with Google ✅");
+      } else {
+        // Update last login timestamp if user already exists
+        await axiosSecure.put(`/users/${userExists._id}`, {
+          last_log_in: new Date().toISOString(),
+        });
+        toast.success("Welcome back! Logged in with Google ✅");
+      }
+
       setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       console.error("Google sign-up error:", err);
@@ -173,6 +197,7 @@ const Register = () => {
       setSubmitting(false);
     }
   };
+  // ============================================
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4">
@@ -242,32 +267,32 @@ const Register = () => {
                 Full Name
               </label>
               <input
-                {...register("name", { required: "Name is required" })}
                 type="text"
-                placeholder="Your name"
-                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Your Full Name"
+                {...register("name", { required: "Name is required" })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
               {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
+                <span className="text-red-600 text-xs">
+                  {errors.name.message}
+                </span>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Photo Upload
+                Email
               </label>
               <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                type="email"
+                placeholder="Your Email"
+                {...register("email", { required: "Email is required" })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
-              {profilePic && (
-                <img
-                  src={profilePic}
-                  alt="Profile Preview"
-                  className="mt-2 w-14 h-14 rounded-full object-cover border"
-                />
+              {errors.email && (
+                <span className="text-red-600 text-xs">
+                  {errors.email.message}
+                </span>
               )}
             </div>
           </div>
@@ -276,145 +301,134 @@ const Register = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                {...register("email", { required: "Email is required" })}
-                type="email"
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-
-            {activeRole === "doctor" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Specialization
-                </label>
-                <select
-                  {...register("specialization", {
-                    required:
-                      activeRole === "doctor"
-                        ? "Specialization is required"
-                        : false,
-                  })}
-                  className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select a specialization
-                  </option>
-                  {DOCTOR_SPECIALTIES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                {errors.specialization && (
-                  <p className="text-red-500 text-sm">
-                    {errors.specialization.message}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Row 3 (Passwords) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <input
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Minimum 6 characters",
-                  },
-                })}
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2 top-9 text-gray-500"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10"
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-2 cursor-pointer text-gray-500"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
               {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                <span className="text-red-600 text-xs">
+                  {errors.password.message}
+                </span>
               )}
             </div>
 
-            <div className="relative">
+            <div>
               <label className="block text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
-              <input
-                {...register("confirmPassword", {
-                  required: "Please confirm password",
-                  validate: (v) =>
-                    v === password || "Passwords do not match",
-                })}
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                className="w-full px-4 py-3 mt-1 rounded-xl border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((s) => !s)}
-                className="absolute right-2 top-9 text-gray-500"
-              >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  {...register("confirmPassword", {
+                    required: "Confirm Password is required",
+                    validate: (value) =>
+                      value === password || "Passwords do not match",
+                  })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10"
+                />
+                <span
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2 top-2 cursor-pointer text-gray-500"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
               {errors.confirmPassword && (
-                <p className="text-red-500 text-sm">
+                <span className="text-red-600 text-xs">
                   {errors.confirmPassword.message}
-                </p>
+                </span>
               )}
             </div>
+          </div>
+
+          {/* Specialization for Doctor */}
+          {activeRole === "doctor" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Specialization
+              </label>
+              <select
+                {...register("specialization", {
+                  required: "Please select a specialization",
+                })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              >
+                <option value="">Select Specialization</option>
+                {DOCTOR_SPECIALTIES.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+              {errors.specialization && (
+                <span className="text-red-600 text-xs">
+                  {errors.specialization.message}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Profile Image */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="mt-1 block w-full"
+            />
           </div>
 
           {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-md hover:opacity-95 active:scale-[.99] transition disabled:opacity-60"
+            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
           >
-            {submitting ? "Creating account..." : "Register"}
+            {submitting ? "Submitting..." : "Register"}
           </button>
+
+          {/* Google Sign Up */}
+          <div className="flex items-center justify-center mt-4 gap-2">
+            <button
+              type="button"
+              onClick={handleGoogleSignUp}
+              className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg p-2 w-full hover:bg-gray-100 transition"
+            >
+              <FcGoogle size={20} />
+              Sign Up with Google
+            </button>
+          </div>
+
+          {/* Login Link */}
+          <p className="text-sm text-center mt-2">
+            Already have an account?{" "}
+            <Link to="/auth/login" className="text-indigo-600 font-semibold">
+              Login
+            </Link>
+          </p>
         </form>
-
-        {/* Google Sign-up */}
-        <div className="mt-5 text-center">
-          <p className="text-sm text-gray-500">Or</p>
-          <button
-            onClick={handleGoogleSignUp}
-            disabled={submitting}
-            className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white py-2.5 shadow-sm hover:bg-gray-50 active:scale-[.99] transition"
-          >
-            <FcGoogle className="text-xl" />
-            <span className="font-semibold">
-              Sign up with Google ({activeRole})
-            </span>
-          </button>
-        </div>
-
-        <p className="text-center mt-3 text-sm">
-          Already have an account?{" "}
-          <Link
-            to="/auth/login"
-            className="border-b border-blue-500 text-blue-600 hover:text-blue-700"
-          >
-            Login
-          </Link>
-        </p>
       </div>
     </div>
   );

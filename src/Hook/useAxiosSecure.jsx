@@ -1,40 +1,11 @@
-import { useEffect } from 'react';
 import axios from 'axios';
-import useAuth from './useAuth';
 
+// Create an axios instance
 const axiosSecure = axios.create({
-  baseURL: 'https://b11a12-server-side-sajjadjim.vercel.app',
+  baseURL: 'http://localhost:3000',  // Your server URL
 });
 
 const useAxiosSecure = () => {
-  const { user } = useAuth();
-
-  useEffect(() => {
-    let requestInterceptor;
-
-    const setInterceptor = async () => {
-      requestInterceptor = axiosSecure.interceptors.request.use(
-        async (config) => {
-          if (user) {
-            const token = await user.getIdToken();
-            config.headers.Authorization = `Bearer ${token}`;
-          }
-          return config;
-        },
-        (error) => Promise.reject(error)
-      );
-    };
-
-    setInterceptor();
-
-    // Clean up interceptor on unmount or when user changes
-    return () => {
-      if (requestInterceptor) {
-        axiosSecure.interceptors.request.eject(requestInterceptor);
-      }
-    };
-  }, [user]);
-
   return axiosSecure;
 };
 

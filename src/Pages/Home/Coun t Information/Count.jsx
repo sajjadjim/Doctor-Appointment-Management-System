@@ -5,66 +5,59 @@ import { useQuery } from '@tanstack/react-query';
 import useFreeAxios from '../../../Hook/useAxios';
 
 const Count = () => {
-    const [userCount, setUserCount] = useState(0);
-    const [bootcampCount, setBootcampCount] = useState(0);
-    const [registrationCount, setRegistrationCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const axiosInstance = useFreeAxios();
 
+    // Fetch total doctors
+    const { data: doctorsData } = useQuery({
+        queryKey: ['doctorsCount'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/users/count/doctors');
+            return res.data;
+        },
+    });
+
+    // Fetch total patients
+    const { data: patientsData } = useQuery({
+        queryKey: ['patientsCount'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/users/count/patients');
+            return res.data;
+        },
+    });
+
+    // Fetch total appointments
+    const { data: appointmentsData } = useQuery({
+        queryKey: ['appointmentsCount'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/appointments/count');
+            return res.data;
+        },
+    });
+
+    // Start animation after data is loaded
     useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setUserCount(3000);
-            setBootcampCount(25);
-            setRegistrationCount(780);
+        if (doctorsData && patientsData && appointmentsData) {
             setLoading(false);
-        }, 1000);
-    }, []);
-
-    const { data: campsData } = useQuery({
-        queryKey: ['camps'],
-        queryFn: async () => {
-            const res = await axiosInstance.get('/camps/stats/count');
-            return res.data;
-        },
-    });
-
-    const { data: registrationData } = useQuery({
-        queryKey: ['registrations'],
-        queryFn: async () => {
-            const res = await axiosInstance.get('/registrations/stats/count');
-            return res.data;
-        },
-    });
-
-    const { data: usersData } = useQuery({
-        queryKey: ['users'],
-        queryFn: async () => {
-            const res = await axiosInstance.get('/users/stats/count');
-            return res.data;
-        },
-    });
-
-    const userNumbers = usersData?.totalUsers || 0;
-    const campsNumber = campsData?.totalCamps || 0;
-    const registrationNumbers = registrationData?.totalRegistrations || 0;
+        }
+    }, [doctorsData, patientsData, appointmentsData]);
 
     const cardData = [
         {
-            label: 'Users',
-            count: userNumbers,
+            label: 'Doctors',
+            count: doctorsData?.doctorsCount || 0,
             icon: <FaUsers className="text-white w-8 h-8" />,
             bg: 'bg-indigo-600',
         },
         {
             label: 'Patients',
-            count: campsNumber,
+            count: patientsData?.patientsCount || 0,
             icon: <FaChalkboardTeacher className="text-white w-8 h-8" />,
             bg: 'bg-green-600',
         },
         {
-            label: 'Doctors',
-            count: registrationNumbers,
+            label: 'Appointments',
+            count: appointmentsData?.appointmentsCount || 0,
             icon: <FaClipboardList className="text-white w-8 h-8" />,
             bg: 'bg-pink-600',
         },

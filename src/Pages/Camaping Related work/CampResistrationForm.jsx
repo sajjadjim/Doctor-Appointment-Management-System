@@ -21,7 +21,7 @@ const CampRegistrationForm = () => {
   useEffect(() => {
     const fetchCamp = async () => {
       try {
-        const res = await axios.get(`https://b11a12-server-side-sajjadjim.vercel.app/camps/${id}`,
+        const res = await axios.get(`http://localhost:3000/camps/${id}`,
           {
             headers:{
               'Authorization': `Bearer ${user?.accessToken}`
@@ -88,7 +88,7 @@ const CampRegistrationForm = () => {
       if (result.isConfirmed) {
         // Store feedback and rating to the database
         try {
-          await axios.post("https://b11a12-server-side-sajjadjim.vercel.app/feedbacks", {
+          await axios.post("http://localhost:3000/feedbacks", {
             campId: id,
             participantName: user?.displayName || "",
             participantEmail: user?.email || "",
@@ -145,7 +145,7 @@ const CampRegistrationForm = () => {
       const accessToken = user?.accessToken;
       // console.log(accessToken)
       if (accessToken) {
-        fetch('https://b11a12-server-side-sajjadjim.vercel.app/users',
+        fetch('http://localhost:3000/users',
           {
             headers: {
               authorization: `Bearer ${accessToken}`
