@@ -19,6 +19,7 @@
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^17.2.2",
     "firebase": "^11.10.0",
     "framer-motion": "^12.23.5",
     "lottie-react": "^2.4.1",

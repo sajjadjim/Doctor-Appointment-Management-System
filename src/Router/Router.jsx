@@ -16,6 +16,7 @@ import Forbidden from "../Forbidden Page/Forbidden";
 import DoctorDetails from "../Pages/Available_Doctor/DoctorDetails";
 import Profile from "../Pages/Profile/Profile";
 import Patient from "../Pages/Dashboard/Patient";
+import Doctor from "../Pages/Dashboard/Doctor";
 
 export const router = createBrowserRouter([
   {
@@ -38,12 +39,12 @@ export const router = createBrowserRouter([
       {
         path: 'doctors',
         element: <PrivateRoute><AvailableDoctors /></PrivateRoute>,
-        loader: () => fetch('http://localhost:3000/users') // Load all camps data
+        loader: () => fetch('https://serverside-code-manegment-code.vercel.app/users') // Load all camps data
       },
       {
         path: '/doctor/:id',
         element: < DoctorDetails/>,
-        loader: ({ params }) => fetch(`http://localhost:3000/users/${params.id}`)
+        loader: ({ params }) => fetch(`https://serverside-code-manegment-code.vercel.app/users/${params.id}`)
       },{
         path:'/profile',
         Component : Profile
@@ -51,6 +52,9 @@ export const router = createBrowserRouter([
       {
         path:'dashboard/patient',
         element:<PrivateRoute><Patient></Patient></PrivateRoute>
+      }, {
+        path:'dashboard/doctor',
+        element:<PrivateRoute><Doctor></Doctor></PrivateRoute>
       }
     ]
   },

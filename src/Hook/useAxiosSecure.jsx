@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance
 const axiosSecure = axios.create({
-  baseURL: 'http://localhost:3000',  // Your server URL
+  baseURL: 'https://serverside-code-manegment-code.vercel.app',  // Your server URL
 });
 
 const useAxiosSecure = () => {

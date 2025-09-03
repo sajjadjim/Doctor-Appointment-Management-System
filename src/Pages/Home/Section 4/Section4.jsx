@@ -58,7 +58,7 @@ const Section4 = () => {
           ))}
         </div>
 
-        <Link to="/patient/dashboard">
+        <Link to="/doctors">
           <button className="px-6 py-3 cursor-pointer bg-indigo-600 text-white text-lg font-medium rounded-lg hover:bg-indigo-700 transition">
             Explore Doctors
           </button>

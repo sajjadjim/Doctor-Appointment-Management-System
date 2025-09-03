@@ -28,16 +28,6 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link to="/patient/dashboard" className="hover:text-indigo-600">
-                Patient Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link to="/doctor/dashboard" className="hover:text-indigo-600">
-                Doctor Dashboard
-              </Link>
-            </li>
-            <li>
               <Link to="/about" className="hover:text-indigo-600">
                 About
               </Link>

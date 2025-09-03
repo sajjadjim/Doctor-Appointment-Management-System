@@ -1,23 +1,21 @@
-import { getAuth } from "firebase/auth";
-// const firebaseConfig = {
-//     apiKey:import.meta.env.VITE_API_KEY,
-//     authDomain:import.meta.env.VITE_AUTH_DOMAIN,
-//     projectId:import.meta.env.VITE_PROJECT_ID,
-//     storageBucket:import.meta.env.VITE_STORAGE_BUCKET,
-//     messagingSenderId:import.meta.env.VITE_MESSAGING_SENDER_ID,
-//     appId:import.meta.env.VITE_APP_ID
-// };
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
+// Firebase configuration using Vite env variables
 const firebaseConfig = {
-  apiKey: "AIzaSyAtbE2DG9gfqM3C4WQLA3RB4gOWYpC-RrY",
-  authDomain: "doctore-appointment-system.firebaseapp.com",
-  projectId: "doctore-appointment-system",
-  storageBucket: "doctore-appointment-system.firebasestorage.app",
-  messagingSenderId: "796274188198",
-  appId: "1:796274188198:web:1147446c740e262df93967"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Firebase Auth instance
 export const auth = getAuth(app);
+
+// Optional: Export the app if you want to use Firestore, Storage, etc.
+export default app;

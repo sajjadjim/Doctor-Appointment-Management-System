@@ -10,7 +10,7 @@ const Section3 = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/users"); // your backend endpoint
+        const res = await axios.get("https://serverside-code-manegment-code.vercel.app/users"); // your backend endpoint
         // Filter only doctors
         const doctorList = res.data.filter((user) => user.role === "doctor");
         // Sort by creation date (newest first) and get top 6
@@ -68,7 +68,7 @@ const Section3 = () => {
 
       <div className="grid justify-center mt-5">
         <Link
-          to="/availableDoctors"
+          to="/doctors"
           className="btn rounded-3xl shadow-2xl mt-5 bg-indigo-400 text-white hover:text-indigo-600 hover:bg-white transition"
         >
           Show All

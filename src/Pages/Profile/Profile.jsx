@@ -13,21 +13,20 @@ const Profile = () => {
     phone: "",
     image: "",
     address: "",
+    fee: "",
   });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [editMode, setEditMode] = useState(false); // New: track edit mode
 
   useEffect(() => {
     if (!user?.email) return;
 
     setLoading(true);
 
-    // Fetch all users and filter by login user email
-    fetch("http://localhost:3000/users", {
-    })
+    fetch("https://serverside-code-manegment-code.vercel.app/users")
       .then((res) => res.json())
       .then((users) => {
-        // Find logged-in user
         const loggedInUser = users.find((u) => u.email === user.email);
         if (loggedInUser) {
           setProfile({
@@ -51,34 +50,33 @@ const Profile = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleUpdate = async () => {
-  setUpdating(true);
-  try {
-    const res = await fetch(`http://localhost:3000/users/${user.email}`, {
-      method: "PATCH", // <-- Use PATCH instead of PUT
-      headers: {
-        "Content-Type": "application/json",
-        // "authorization": `Bearer ${accessToken}`, // optional if you implement auth
-      },
-      body: JSON.stringify(profile),
-    });
+  const handleUpdate = async () => {
+    setUpdating(true);
+    try {
+      const res = await fetch(`https://serverside-code-manegment-code.vercel.app/users/${user.email}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profile),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      toast.success("Profile updated successfully ✅");
-      setProfile(data); // updated user returned from server
-    } else {
-      toast.error(data.message || "Failed to update profile ❌");
+      if (res.ok) {
+        toast.success("Profile updated successfully ✅");
+        setProfile(data);
+        setEditMode(false); // exit edit mode after update
+      } else {
+        toast.error(data.message || "Failed to update profile ❌");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error! Could not update profile ❌");
+    } finally {
+      setUpdating(false);
     }
-  } catch (err) {
-    console.error(err);
-    toast.error("Server error! Could not update profile ❌");
-  } finally {
-    setUpdating(false);
-  }
-};
-
+  };
 
   if (loading) {
     return (
@@ -104,14 +102,17 @@ const handleUpdate = async () => {
             alt="User Avatar"
             className="w-28 h-28 rounded-full border-2 border-indigo-500 object-cover"
           />
-          <input
-            type="text"
-            name="image"
-            value={profile.image}
-            placeholder="Image URL"
-            onChange={handleChange}
-            className="mt-2 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+
+          {editMode && (
+            <input
+              type="text"
+              name="image"
+              value={profile.image}
+              placeholder="Image URL"
+              onChange={handleChange}
+              className="mt-2 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          )}
         </div>
 
         {/* Profile Form */}
@@ -123,7 +124,10 @@ const handleUpdate = async () => {
               name="name"
               value={profile.name}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              disabled={!editMode}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                editMode ? "border-gray-300 focus:ring-indigo-400" : "bg-gray-100 cursor-not-allowed"
+              }`}
             />
           </div>
 
@@ -150,28 +154,32 @@ const handleUpdate = async () => {
           </div>
 
           {profile.role === "doctor" && (
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">Specialization</label>
-              <input
-                type="text"
-                name="specialization"
-                value={profile.specialization}
-                disabled
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
-              />
-            </div>
-          )}
-            {profile.role === "doctor" && (
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">Fee ($)</label>
-              <input
-                type="number"
-                name="fee"
-                value={profile.fee}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">Specialization</label>
+                <input
+                  type="text"
+                  name="specialization"
+                  value={profile.specialization}
+                  disabled
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">Fee ($)</label>
+                <input
+                  type="number"
+                  name="fee"
+                  value={profile.fee}
+                  onChange={handleChange}
+                  disabled={!editMode}
+                  className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                    editMode ? "border-gray-300 focus:ring-indigo-400" : "bg-gray-100 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+            </>
           )}
 
           <div>
@@ -181,7 +189,10 @@ const handleUpdate = async () => {
               name="phone"
               value={profile.phone}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              disabled={!editMode}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                editMode ? "border-gray-300 focus:ring-indigo-400" : "bg-gray-100 cursor-not-allowed"
+              }`}
             />
           </div>
 
@@ -192,20 +203,32 @@ const handleUpdate = async () => {
               name="address"
               value={profile.address}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              disabled={!editMode}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                editMode ? "border-gray-300 focus:ring-indigo-400" : "bg-gray-100 cursor-not-allowed"
+              }`}
               placeholder="Add your address"
             />
           </div>
 
-          <button
-            onClick={handleUpdate}
-            disabled={updating}
-            className={`w-full mt-4 py-2 rounded-lg text-white font-semibold ${
-              updating ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
-            } transition`}
-          >
-            {updating ? "Updating..." : "Update Profile"}
-          </button>
+          {!editMode ? (
+            <button
+              onClick={() => setEditMode(true)}
+              className="w-full mt-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition"
+            >
+              Update Profile
+            </button>
+          ) : (
+            <button
+              onClick={handleUpdate}
+              disabled={updating}
+              className={`w-full mt-4 py-2 rounded-lg text-white font-semibold ${
+                updating ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+              } transition`}
+            >
+              {updating ? "Updating..." : "Save Changes"}
+            </button>
+          )}
         </div>
       </div>
     </div>

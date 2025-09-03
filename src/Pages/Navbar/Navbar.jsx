@@ -45,7 +45,7 @@ const Navbar = () => {
     let isMounted = true;
 
     if (accessToken) {
-      fetch("http://localhost:3000/users", {
+      fetch("https://serverside-code-manegment-code.vercel.app/users", {
         headers: { authorization: `Bearer ${accessToken}` },
       })
         .then((res) => res.json())
@@ -66,6 +66,7 @@ const Navbar = () => {
     () => dbUser.find((u) => u.email === user?.email),
     [dbUser, user?.email]
   );
+  // console.log("Current User:", currentUser);
 
   const displayName = currentUser?.name || user?.displayName || "User";
   const avatar =
