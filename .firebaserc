@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "medical-camp-management-4da72"
-  }
+    "default": "doctore-appointment-system"
+  },
+  "targets": {},
+  "etags": {}
 }

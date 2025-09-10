@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
+import { motion } from "framer-motion";
+import { ArrowRight, Stethoscope } from "lucide-react";
 
 const Section1 = () => {
   const scrollToHowItWorks = () => {
@@ -8,78 +10,96 @@ const Section1 = () => {
   };
 
   return (
-    <section className="relative w-full h-screen text-white overflow-hidden">
-      {/* Background image */}
-      <img
-        src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Healthcare background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
+    <section className="relative w-full min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 text-gray-900 flex items-center overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-10 items-center">
+        {/* Left Content */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="flex flex-col"
+        >
+          <p className="text-indigo-600 font-semibold text-sm md:text-base mb-3 tracking-wide uppercase">
+            Fast • Secure • Reliable
+          </p>
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/60 z-10" />
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 leading-tight">
+            Doctor Appointment
+            <span className="text-indigo-600"> Management </span>
+            System (DAMS)
+          </h1>
 
-      {/* Content */}
-      <div className="relative z-20 flex flex-col justify-center items-start h-full px-6 md:px-12 max-w-6xl mx-auto">
-        <p className="text-indigo-300 font-semibold text-sm md:text-base mb-2 tracking-wide">
-          fast • secure • reliable
-        </p>
+          <p className="text-base md:text-lg mb-7 text-gray-600 max-w-xl">
+            Book appointments with specialists, track visits, and manage
+            everything in one place. Designed for both patients and doctors with
+            an intuitive, responsive interface.
+          </p>
 
-        <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-snug md:leading-tight">
-          Doctor Appointment Management System
-          <br className="hidden md:block" />
-          <span className="text-indigo-300/90">(DAMS)</span>
-        </h1>
+          {/* CTA buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              to="/auth/register"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-base font-semibold transition flex items-center gap-2 shadow-md"
+            >
+              <Stethoscope className="w-5 h-5" /> Create an account
+            </Link>
 
-        <p className="text-base md:text-lg mb-6 max-w-2xl text-white/90">
-          Find the right specialist, book in seconds, and manage your visits in one
-          place. Real-time status updates, role-based dashboards for patients and
-          doctors, and a clean, responsive UI.
-        </p>
+            <Link
+              to="/patient/dashboard"
+              className="bg-white hover:bg-gray-50 text-gray-900 px-6 py-3 rounded-xl text-base font-semibold transition border border-gray-300 flex items-center gap-2 shadow-sm"
+            >
+              Explore doctors <ArrowRight className="w-5 h-5" />
+            </Link>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <Link
-            to="/auth/register"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-full text-base font-semibold transition shadow"
-          >
-            Create an account
-          </Link>
-
-          <Link
-            to="/patient/dashboard"
-            className="bg-white/90 hover:bg-white text-gray-900 px-6 py-3 rounded-full text-base font-semibold transition shadow border border-white/60"
-          >
-            Explore doctors
-          </Link>
-
-          <button
-            onClick={scrollToHowItWorks}
-            className="bg-transparent hover:bg-white/10 text-white px-6 py-3 rounded-full text-base font-semibold transition border border-white/40"
-          >
-            ▶ How it works
-          </button>
-        </div>
-
-        {/* Testimonial */}
-        <div className="bg-white/10 p-4 rounded-lg backdrop-blur-sm max-w-md w-full text-sm border border-white/20">
-          <div className="flex items-center gap-3 mb-2">
-            <img
-              src="https://randomuser.me/api/portraits/women/65.jpg"
-              alt="Happy patient"
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <span className="text-yellow-300 text-lg" aria-hidden>
-              ★★★★★
-            </span>
+            <button
+              onClick={scrollToHowItWorks}
+              className="text-indigo-600 hover:text-indigo-700 px-6 py-3 rounded-xl text-base font-semibold transition flex items-center gap-2"
+            >
+              ▶ How it works
+            </button>
           </div>
-          <p className="italic text-white/95">
-            “Booking my cardiology visit took under a minute. I loved the reminders
-            and clear status updates.”
-          </p>
-          <p className="font-semibold mt-2 text-white">
-            Alicia P., Verified Patient
-          </p>
-        </div>
+
+          {/* Testimonial card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="bg-white mt-10 p-6 rounded-2xl shadow-lg border border-gray-200 max-w-md"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <img
+                src="https://randomuser.me/api/portraits/women/65.jpg"
+                alt="Happy patient"
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <span className="text-yellow-500 text-lg">★★★★★</span>
+            </div>
+            <p className="italic text-gray-700">
+              “I booked my cardiology visit in under a minute. The reminders and
+              real-time updates were a lifesaver.”
+            </p>
+            <p className="font-semibold mt-3 text-gray-900">
+              — Alicia P., Verified Patient
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Right Image */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative"
+        >
+          <img
+            src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Doctor with patient"
+            className="rounded-2xl shadow-xl object-cover w-full h-[550px]"
+          />
+          {/* Decorative circle */}
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-200 rounded-full blur-2xl opacity-70" />
+          <div className="absolute -bottom-10 -right-10 w-56 h-56 bg-purple-200 rounded-full blur-3xl opacity-60" />
+        </motion.div>
       </div>
     </section>
   );
